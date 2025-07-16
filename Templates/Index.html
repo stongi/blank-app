@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XRP Trading Bot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center my-4">XRP Trading Bot</h1>
+        
+        <!-- Balans și preț curent -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Balans v</h5>
+                        <p class="card-text">{{ balance|round(2) }} USDT</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Preț XRP/USDT</h5>
+                        <p class="card-text">{{ current_price|round(4) }} USDT</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Indicatori -->
+        <div class="card my-4">
+            <div class="card-body">
+                <h5 class="card-title">Indicatori tehnici</h5>
+                <ul class="list-group">
+                    {% for key, value in indicators.items() %}
+                    <li class="list-group-item">{{ key }}: {{ value|round(4) }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Predicții -->
+        <div class="card my-4">
+            <div class="card-body">
+                <h5 class="card-title">Predicții de preț</h5>
+                <ul class="list-group">
+                    <li class="list-group-item">1 minut: {{ predictions['1m']|round(4) }} USDT</li>
+                    <li class="list-group-item">5 minute: {{ predictions['5m']|round(4) }} USDT</li>
+                    <li class="list-group-item">15 minute: {{ predictions['15m']|round(4) }} USDT</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Decizie autotrading -->
+        <div class="card my-4">
+            <div class="card-body">
+                <h5 class="card-title">Decizie autotrading</h5>
+                <p class="card-text {{ 'text-success' if last_signal == 'buy' else 'text-danger' if last_signal == 'sell' else '' }}">
+                    {{ last_signal|capitalize }}
+                </p>
+                <p class="card-text">Ultima analiză: {{ last_analysis_time }}</p>
+                <p class="card-text">Poziție curentă: {{ position|default('Niciuna')|capitalize }}</p>
+                <p class="card-text">Cantitate poziție: {{ current_position_qty|round(2) }} XRP</p>
+            </div>
+        </div>
+        
+        <!-- Grafice -->
+        <div class="card my-4">
+            <div class="card-body">
+                <h5 class="card-title">Profit</h5>
+                <canvas id="profitChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+    <script>
+        // Date pentru grafice
+        const profit1d = {{ profit_1d|tojson }};
+        const profit1w = {{ profit_1w|tojson }};
+        const profit1m = {{ profit_1m|tojson }};
+    </script>
+</body>
+</html>
